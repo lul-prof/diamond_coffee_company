@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Diamond Coffee{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    
+    <div class="row g-4">
+        <!-- Quick Stats -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h3 class="h5 mb-3">Total Orders</h3>
+                    <p class="h2 mb-0">{{ orders|length }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h3 class="h5 mb-3">Active Users</h3>
+                    <p class="h2 mb-0">{{ users|length }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h3 class="h5 mb-3">Products</h3>
+                    <p class="h2 mb-0">{{ products|length }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h3 class="h5 mb-4">Quick Actions</h3>
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('admin.manage_products') }}" class="btn btn-primary">Manage Products</a>
+                        <a href="{{ url_for('admin.manage_users') }}" class="btn btn-primary">Manage Users</a>
+                        <a href="{{ url_for('admin.manage_orders') }}" class="btn btn-primary">View Orders</a>
+                        <a href="{{ url_for('admin.manage_blog') }}" class="btn btn-primary">Blog Posts</a>
+                        
+                        <div class="dropdown d-inline-block">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="messageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                Messages
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="messageDropdown">
+                                {% for employee in employees %}
+                                <li><a class="dropdown-item" href="{{ url_for('admin.view_messages', employee_id=employee.id) }}">{{ employee.username }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

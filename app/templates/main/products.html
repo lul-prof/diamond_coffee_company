@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Our Products - Diamond Coffee Company{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-5">Our Coffee Selection</h1>
+    
+    <div class="row g-4">
+        {% for product in products %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <img src="{{ url_for('static', filename='img/products/' + product.image) if product.image else url_for('static', filename='img/default-coffee.jpg') }}" 
+                     class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body">
+                    <h3 class="card-title h4">{{ product.name }}</h3>
+                    <p class="text-muted">Grade: {{ product.grade }}</p>
+                    <ul class="list-unstyled">
+                        <li><strong>Origin:</strong> {{ product.origin }}</li>
+                        <li><strong>Altitude:</strong> {{ product.altitude }}</li>
+                        <li><strong>Processing:</strong> {{ product.processing }}</li>
+                        <li><strong>Cupping Notes:</strong> {{ product.cupping_notes }}</li>
+                    </ul>
+                    <p class="h5 mb-3">${{ "%.2f"|format(product.price_per_kg) }} per kg</p>
+                    {% if current_user.is_authenticated and current_user.role == 'client' %}
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#orderModal{{ product.id }}">
+                        Place Order
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        {% if current_user.is_authenticated and current_user.role == 'client' %}
+        <!-- Order Modal -->
+        <div class="modal fade" id="orderModal{{ product.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Order {{ product.name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="{{ url_for('client.place_order', product_id=product.id) }}" method="POST">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Quantity (kg)</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" required min="1" step="0.1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="shipping_address" class="form-label">Shipping Address</label>
+                                <textarea class="form-control" id="shipping_address" name="shipping_address" required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Place Order</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

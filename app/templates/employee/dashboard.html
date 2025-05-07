@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Dashboard - Diamond Coffee{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Welcome, {{ current_user.username }}</h1>
+    
+    <div class="row g-4">
+        <!-- Task Summary Card -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h4 mb-4"><i class="fas fa-tasks text-primary me-2"></i>Task Summary</h2>
+                    <div class="row text-center g-3">
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded">
+                                <h3 class="h5">Active Tasks</h3>
+                                <p class="h2 mb-0">{{ tasks|selectattr('status', 'equalto', 'pending')|list|length }}</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded">
+                                <h3 class="h5">Completed</h3>
+                                <p class="h2 mb-0">{{ tasks|selectattr('status', 'equalto', 'completed')|list|length }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ url_for('employee.tasks') }}" class="btn btn-primary">View All Tasks</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h4 mb-4"><i class="fas fa-bolt text-primary me-2"></i>Quick Actions</h2>
+                    <div class="d-grid gap-3">
+                        <a href="{{ url_for('employee.chat') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-comments me-2"></i>Chat with Management
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-file-alt me-2"></i>Submit Report
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-alt me-2"></i>View Schedule
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Tasks -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h2 class="h4 mb-4"><i class="fas fa-clock text-primary me-2"></i>Recent Tasks</h2>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in tasks[:5] %}
+                                <tr>
+                                    <td>{{ task.title }}</td>
+                                    <td>{{ task.due_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if task.status == 'completed' else 'warning' }}">
+                                            {{ task.status|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Client Dashboard - Diamond Coffee{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Welcome, {{ current_user.company_name }}</h1>
+    
+    <div class="row g-4">
+        <!-- Order Summary -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h4 mb-4"><i class="fas fa-shopping-cart text-primary me-2"></i>Order Summary</h2>
+                    <div class="row text-center g-3">
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded">
+                                <h3 class="h5">Total Orders</h3>
+                                <p class="h2 mb-0">{{ orders|length }}</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded">
+                                <h3 class="h5">Active Orders</h3>
+                                <p class="h2 mb-0">{{ orders|selectattr('status', 'equalto', 'pending')|list|length }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ url_for('client.view_orders') }}" class="btn btn-primary">View All Orders</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h4 mb-4"><i class="fas fa-bolt text-primary me-2"></i>Quick Actions</h2>
+                    <div class="d-grid gap-3">
+                        <a href="{{ url_for('main.products') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-coffee me-2"></i>Browse Products
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-file-alt me-2"></i>Request Sample
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-comments me-2"></i>Contact Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h2 class="h4 mb-4"><i class="fas fa-clock text-primary me-2"></i>Recent Orders</h2>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th>Order Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders[:5] %}
+                                <tr>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.product.name }}</td>
+                                    <td>{{ order.quantity }} kg</td>
+                                    <td>${{ "%.2f"|format(order.total_amount) }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if order.status == 'completed' else 'warning' }}">
+                                            {{ order.status|title }}
+                                        </span>
+                                    </td>
+                                    <td>{{ order.created_at.strftime('%Y-%m-%d') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

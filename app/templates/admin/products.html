@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Products - Diamond Coffee{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Manage Products</h1>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+            Add New Product
+        </button>
+    </div>
+    
+    <!-- Products Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Grade</th>
+                            <th>Origin</th>
+                            <th>Available (kg)</th>
+                            <th>Price/kg</th>
+                            <th>Product</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.grade }}</td>
+                            <td>{{ product.origin }}</td>
+                            <td>{{ product.available_quantity }}</td>
+                            <td>${{ "%.2f"|format(product.price_per_kg) }}</td>
+                            <td><img src="{{ url_for('static', filename='img/products/' + product.image) if product.image else url_for('static', filename='img/default-coffee.jpg') }}" class="card-img-top" alt="{{ product.name }}"></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{ url_for('admin.manage_products') }}" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Grade</label>
+                                <input type="text" class="form-control" name="grade" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Origin</label>
+                                <input type="text" class="form-control" name="origin" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Altitude</label>
+                                <input type="text" class="form-control" name="altitude">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Processing</label>
+                                <input type="text" class="form-control" name="processing">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Moisture Level</label>
+                                <input type="number" step="0.01" class="form-control" name="moisture_level">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Cupping Notes</label>
+                                <textarea class="form-control" name="cupping_notes" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Available Quantity (kg)</label>
+                                <input type="number" step="0.01" class="form-control" name="available_quantity" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Price per kg ($)</label>
+                                <input type="number" step="0.01" class="form-control" name="price_per_kg" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Product Image</label>
+                                <input type="file" class="form-control" name="image" accept="image/*">
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Add Product</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

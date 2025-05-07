@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Messages - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Messages</h1>
+    
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="chat-messages" id="messageContainer">
+                {% for message in messages %}
+                <div class="message {% if message.sender_id == current_user.id %}message-sent{% else %}message-received{% endif %}">
+                    <div class="message-content">{{ message.content }}</div>
+                    <small class="text-muted">
+                        {{ message.sender.username }} - {{ message.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                    </small>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="chat-input mt-4">
+                <form id="messageForm" class="d-flex gap-2">
+                    <input type="text" class="form-control" id="messageInput" placeholder="Type your reply...">
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.chat-messages {
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 1rem;
+}
+.message {
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    border-radius: 1rem;
+    max-width: 75%;
+}
+.message-sent {
+    background-color: #007bff;
+    color: white;
+    margin-left: auto;
+}
+.message-received {
+    background-color: #f8f9fa;
+    margin-right: auto;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+const socket = io();
+const messageContainer = document.getElementById('messageContainer');
+const messageForm = document.getElementById('messageForm');
+const messageInput = document.getElementById('messageInput');
+
+// Connect to WebSocket
+socket.on('connect', () => {
+    console.log('Connected to WebSocket');
+});
+
+// Handle incoming messages
+socket.on('receive_message', (data) => {
+    addMessage(data.message, data.sender, data.timestamp, false);
+});
+
+// Send message
+messageForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const message = messageInput.value.trim();
+    if (message) {
+        socket.emit('send_message', {
+            message: message,
+            receiver_id: "{{ employee_id }}"  // ID of the employee we're replying to
+        });
+        addMessage(message, '{{ current_user.username }}', new Date().toISOString(), true);
+        messageInput.value = '';
+    }
+});
+
+function addMessage(message, sender, timestamp, isSent) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isSent ? 'message-sent' : 'message-received'}`;
+    messageDiv.innerHTML = `
+        <div class="message-content">${message}</div>
+        <small class="text-muted">${sender} - ${formatTimestamp(timestamp)}</small>
+    `;
+    messageContainer.appendChild(messageDiv);
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+}
+
+function formatTimestamp(timestamp) {
+    return new Date(timestamp).toLocaleTimeString();
+}
+</script>
+{% endblock %}

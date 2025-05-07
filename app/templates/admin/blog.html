@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Blog Posts - Diamond Coffee{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Manage Blog Posts</h1>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBlogPostModal">
+            Add New Post
+        </button>
+    </div>
+    
+    <!-- Blog Posts Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Image</th>
+                            <th>Author</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in posts %}
+                        <tr data-post-id="{{ post.id }}">
+                            <td class="post-title">{{ post.title }}</td>
+                            <td>
+                                <img src="{{ url_for('static', filename='img/blog/' + post.image_url) if post.image_url else url_for('static', filename='img/default-blog.jpg') }}" 
+                                     class="img-thumbnail" 
+                                     style="max-width: 100px;" 
+                                     alt="{{ post.title }}">
+                            </td>
+                            <td>{{ post.author.username }}</td>
+                            <td>{{ post.created_at.strftime('%B %d, %Y') if post.published_at else post.published_at.strftime('%B %d, %Y') }}</td> 
+                            <td>{{ post.status }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary edit-post-btn" 
+                                        data-post-id="{{ post.id }}"
+                                        data-title="{{ post.title }}"
+                                        data-content="{{ post.content }}"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editBlogPostModal">Edit</button>
+                                <button class="btn btn-sm btn-outline-danger delete-post-btn" 
+                                        data-post-id="{{ post.id }}">Delete</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Blog Post Modal -->
+    <div class="modal fade" id="addBlogPostModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Blog Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{ url_for('admin.add_blog_post') }}" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-control" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Content</label>
+                            <textarea class="form-control" name="content" rows="10" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Featured Image</label>
+                            <input type="file" class="form-control" name="image" accept="image/*">
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Publish Post</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Blog Post Modal -->
+    <div class="modal fade" id="editBlogPostModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Blog Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editBlogPostForm" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" id="editPostId" name="post_id">
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-control" id="editTitle" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Content</label>
+                            <textarea class="form-control" id="editContent" name="content" rows="10" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Featured Image</label>
+                            <input type="file" class="form-control" name="image" accept="image/*">
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Update Post</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Handle edit button click
+    $('.edit-post-btn').click(function() {
+        const postId = $(this).data('post-id');
+        const title = $(this).data('title');
+        const content = $(this).data('content');
+        
+        $('#editPostId').val(postId);
+        $('#editTitle').val(title);
+        $('#editContent').val(content);
+        $('#editBlogPostForm').attr('action', `/admin/blog/edit/${postId}`);
+    });
+    
+    // Handle delete button click
+    $('.delete-post-btn').click(function() {
+        if (confirm('Are you sure you want to delete this post?')) {
+            const postId = $(this).data('post-id');
+            $.post(`/admin/blog/delete/${postId}`, function() {
+                location.reload();
+            });
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

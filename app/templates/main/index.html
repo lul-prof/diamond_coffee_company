@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Diamond Coffee Company - Premium Kenyan Coffee{% endblock %}
+
+{% block content %}
+<div class="hero-section position-relative">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold">Premium Kenyan Coffee</h1>
+                <p class="lead">Direct from the highlands of Kenya to your roastery. Experience the finest coffee beans with exceptional quality and sustainable practices.</p>
+                <a href="{{ url_for('main.products') }}" class="btn btn-primary btn-lg">Explore Our Coffee</a>
+            </div>
+            <div class="col-lg-6">
+                <img src="{{ url_for('static', filename='img/hero-coffee.jpg') }}" alt="Coffee Beans" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="features py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Choose Diamond Coffee</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-award fa-3x mb-3 text-primary"></i>
+                        <h3 class="h4">Premium Quality</h3>
+                        <p>Hand-picked, carefully processed coffee beans from Kenya's finest regions.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-handshake fa-3x mb-3 text-primary"></i>
+                        <h3 class="h4">Direct Trade</h3>
+                        <p>Building lasting relationships with farmers and ensuring fair compensation.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-leaf fa-3x mb-3 text-primary"></i>
+                        <h3 class="h4">Sustainability</h3>
+                        <p>Committed to environmental stewardship and sustainable farming practices.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

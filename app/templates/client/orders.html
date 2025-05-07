@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders - Diamond Coffee{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">My Orders</h1>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <!-- Order Filters -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <select class="form-select" id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="date" class="form-control" id="dateFilter">
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                    <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+                </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Order Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.product.name }}</td>
+                            <td>{{ order.quantity }} kg</td>
+                            <td>${{ "%.2f"|format(order.total_amount) }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if order.status == 'delivered' 
+                                                    else 'info' if order.status == 'shipped'
+                                                    else 'warning' if order.status == 'processing'
+                                                    else 'secondary' }}">
+                                    {{ order.status|title }}
+                                </span>
+                            </td>
+                            <td>{{ order.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#orderModal{{ order.id }}">
+                                    View Details
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Detail Modals -->
+    {% for order in orders %}
+    <div class="modal fade" id="orderModal{{ order.id }}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Order Details #{{ order.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Product Information</h6>
+                            <p><strong>Name:</strong> {{ order.product.name }}</p>
+                            <p><strong>Grade:</strong> {{ order.product.grade }}</p>
+                            <p><strong>Origin:</strong> {{ order.product.origin }}</p>
+                            <p><strong>Processing:</strong> {{ order.product.processing }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Order Information</h6>
+                            <p><strong>Quantity:</strong> {{ order.quantity }} kg</p>
+                            <p><strong>Price per kg:</strong> ${{ "%.2f"|format(order.price_per_kg) }}</p>
+                            <p><strong>Total Amount:</strong> ${{ "%.2f"|format(order.total_amount) }}</p>
+                            <p><strong>Status:</strong> {{ order.status|title }}</p>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <h6>Shipping Information</h6>
+                            <p><strong>Address:</strong> {{ order.shipping_address }}</p>
+                            {% if order.tracking_number %}
+                            <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% block extra_js %}
+<script>
+function applyFilters() {
+    const status = document.getElementById('statusFilter').value;
+    const date = document.getElementById('dateFilter').value;
+    const url = new URL(window.location.href);
+    
+    // Clear existing parameters
+    url.searchParams.delete('status');
+    url.searchParams.delete('date');
+    
+    // Add new parameters if they have values
+    if (status) url.searchParams.set('status', status);
+    if (date) url.searchParams.set('date', date);
+    
+    // Redirect to filtered URL
+    window.location.href = url.toString();
+}
+
+function resetFilters() {
+    // Redirect to base URL without parameters
+    window.location.href = window.location.pathname;
+}
+
+// Set initial filter values from URL parameters
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+    const date = urlParams.get('date');
+    
+    if (status) document.getElementById('statusFilter').value = status;
+    if (date) document.getElementById('dateFilter').value = date;
+});
+</script>
+{% endblock %}
+{% endblock %}

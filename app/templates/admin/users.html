@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - Diamond Coffee{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Manage Users</h1>
+    
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Company</th>
+                            <th>Contact Person</th>
+                            <th>Country</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr data-user-id="{{ user.id }}">
+                            <td class="user-username">{{ user.username }}</td>
+                            <td class="user-email">{{ user.email }}</td>
+                            <td class="user-role">{{ user.role }}</td>
+                            <td class="user-company">{{ user.company_name }}</td>
+                            <td class="user-contact">{{ user.contact_person }}</td>
+                            <td class="user-country">{{ user.country }}</td>
+                            <td class="user-status">
+                                {% if user.is_active %}
+                                <span class="badge bg-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            
+
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary edit-user-btn" 
+                                        data-user-id="{{ user.id }}"
+                                        data-username="{{ user.username }}"
+                                        data-email="{{ user.email }}"
+                                        data-role="{{ user.role }}"
+                                        data-company="{{ user.company_name }}"
+                                        data-contact="{{ user.contact_person }}"
+                                        data-country="{{ user.country }}"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editUserModal">Edit</button>
+                                {% if user.is_active %}
+                                <button class="btn btn-sm btn-outline-danger toggle-status-btn" 
+                                        data-user-id="{{ user.id }}" 
+                                        data-action="deactivate">Deactivate</button>
+                                {% else %}
+                                <button class="btn btn-sm btn-outline-success toggle-status-btn" 
+                                        data-user-id="{{ user.id }}" 
+                                        data-action="activate">Activate</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm" method="POST">
+                    <input type="hidden" id="editUserId" name="user_id">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" id="editUsername" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" id="editRole" name="role" required>
+                            <option value="client">Client</option>
+                            <option value="employee">Employee</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" class="form-control" id="editCompanyName" name="company_name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contact Person</label>
+                        <input type="text" class="form-control" id="editContactPerson" name="contact_person">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Country</label>
+                        <input type="text" class="form-control" id="editCountry" name="country">
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

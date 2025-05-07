@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - Diamond Coffee{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <article>
+        <h1 class="mb-4">{{ post.title }}</h1>
+        
+        <div class="text-muted mb-4">
+            <small>
+                Posted on {{ post.created_at.strftime('%B %d, %Y') }}
+                {% if post.author %}
+                by {{ post.author.username }}
+                {% endif %}
+            </small>
+        </div>
+
+        {% if post.image_url %}
+        <img src="{{ url_for('static', filename='img/blog/' + post.image_url) }}" 
+             class="img-fluid mb-4" 
+             alt="{{ post.title }}">
+        {% endif %}
+
+        <div class="blog-content">
+            {{ post.content | safe }}
+        </div>
+    </article>
+</div>
+{% endblock %}
