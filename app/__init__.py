@@ -1,14 +1,14 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from flask_socketio import SocketIO
+#from flask_socketio import SocketIO
 from flask_migrate import Migrate
 from flask_mail import Mail
 from .config import Config
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-socketio = SocketIO()
+#socketio = SocketIO()
 migrate = Migrate()
 mail = Mail()
 
@@ -24,7 +24,7 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
-    socketio.init_app(app)
+    #socketio.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
 
