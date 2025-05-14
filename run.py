@@ -7,5 +7,8 @@ with app.app_context():
     db.create_all()
     
 if __name__ == '__main__':
+    # Initialize database tables
+    with app.app_context():
+        db.create_all()
     
-    socketio.run()  
+    socketio.run(app)  
